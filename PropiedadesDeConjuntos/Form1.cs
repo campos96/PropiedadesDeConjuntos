@@ -12,6 +12,8 @@ namespace PropiedadesDeConjuntos
 {
     public partial class Form1 : Form
     {
+        string[] members;
+
         public Form1()
         {
             InitializeComponent();
@@ -19,17 +21,10 @@ namespace PropiedadesDeConjuntos
 
         private void btnAnalyze_Click(object sender, EventArgs e)
         {
-            var members = txtMembers.Text.Split(',');
+            members = txtMembers.Text.Split(',');
 
             dvMatrix.RowCount = members.Count();
             dvMatrix.ColumnCount = members.Count();
-
-
-            for (int i = 0; i < members.Count(); i++)
-            {
-                dvMatrix.Columns[i].HeaderText = members[i];
-                dvMatrix.Rows[i].HeaderCell.Value = members[i];
-            }
 
             for (int i = 0; i < dvMatrix.RowCount; i++)
             {
@@ -38,6 +33,14 @@ namespace PropiedadesDeConjuntos
                     dvMatrix[j, i].Value = 0;
                 }
             }
+
+            for (int i = 0; i < members.Count(); i++)
+            {
+                dvMatrix.Columns[i].HeaderText = members[i];
+                dvMatrix.Rows[i].HeaderCell.Value = members[i];
+            }
+
+            ShowRelationships();
         }
 
         private void dvMatrix_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -56,6 +59,24 @@ namespace PropiedadesDeConjuntos
             {
                 dvMatrix[e.ColumnIndex, e.RowIndex].Value = 0;
             }
+
+            ShowRelationships();
+            IsReflexive();
+        }
+
+        private void ShowRelationships()
+        {
+            txtRelationships.Text = "";
+            for (int i = 0; i < dvMatrix.RowCount; i++)
+            {
+                for (int j = 0; j < dvMatrix.ColumnCount; j++)
+                {
+                    if (dvMatrix[j, i].Value.ToString() == "1")
+                    {
+                        txtRelationships.Text += $"({members[i]},{members[j]}), ";
+                    }
+                }
+            }
         }
 
         private void btnEvaluate_Click(object sender, EventArgs e)
@@ -70,6 +91,39 @@ namespace PropiedadesDeConjuntos
             }
         }
 
+        private bool IsTransitive()
+        {
+            bool IsTransitive = true;
+
+
+            for (int i = 0; i < dvMatrix.RowCount; i++)
+            {
+                for (int j = 0; j < dvMatrix.ColumnCount; j++)
+                {
+                    if (i != j)
+                    {
+                        if (dvMatrix[j, i].Value.ToString() == "1")
+                        {
+                            
+                        }
+                    }
+                }
+            }
+            return IsTransitive;
+        }
+
+        private int con(int element)
+        {
+            for (int i = 0; i < members.Count(); i++)
+            {
+                if (dvMatrix[element, i].Value.ToString() == "1")
+                {
+                    //ok = true;
+                }
+            }
+            return 0;
+        }
+
         private bool IsReflexive()
         {
             bool IsReflexive = true;
@@ -81,6 +135,21 @@ namespace PropiedadesDeConjuntos
                     {
                         IsReflexive = false;
                     }
+                }
+            }
+
+            if (IsReflexive)
+            {
+                for (int i = 0; i < dvMatrix.RowCount; i++)
+                {
+                    dvMatrix[i, i].Style.BackColor = Color.LightGreen;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < dvMatrix.RowCount; i++)
+                {
+                    dvMatrix[i, i].Style.BackColor = Color.White;
                 }
             }
 
