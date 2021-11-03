@@ -13,6 +13,7 @@ namespace PropiedadesDeConjuntos
     public partial class Form1 : Form
     {
         string[] members;
+        int relations = 0;
 
         public Form1()
         {
@@ -21,8 +22,12 @@ namespace PropiedadesDeConjuntos
 
         private void btnAnalyze_Click(object sender, EventArgs e)
         {
-            members = txtMembers.Text.Split(',');
+            DrawTable();
+        }
 
+        private void DrawTable()
+        {
+            members = txtMembers.Text.Split(',');
             dvMatrix.RowCount = members.Count();
             dvMatrix.ColumnCount = members.Count();
 
@@ -37,15 +42,15 @@ namespace PropiedadesDeConjuntos
             for (int i = 0; i < members.Count(); i++)
             {
                 dvMatrix.Columns[i].HeaderText = members[i];
+                dvMatrix.Columns[i].SortMode = DataGridViewColumnSortMode.NotSortable;
                 dvMatrix.Rows[i].HeaderCell.Value = members[i];
             }
 
+            dvMatrix.DefaultCellStyle.Font = new Font("Arial", 18);
+            dvMatrix.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 18);
+            dvMatrix.RowHeadersDefaultCellStyle.Font = new Font("Arial", 18);
+
             ShowRelationships();
-        }
-
-        private void dvMatrix_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
         }
 
         private void dvMatrix_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -62,7 +67,6 @@ namespace PropiedadesDeConjuntos
                 }
 
                 ShowRelationships();
-
             }
             else
             {
@@ -95,26 +99,31 @@ namespace PropiedadesDeConjuntos
             }
             else
             {
-                lblAntisimetrica.Visible = true;
+                if (relations > 0)
+                {
+                    lblAntisimetrica.Visible = true;
+                }
                 lblSimetrica.Visible = false;
             }
         }
 
         private void ShowRelationships()
         {
+            int counter = 0;
             txtRelationships.Text = "";
             for (int i = 0; i < dvMatrix.RowCount; i++)
             {
                 for (int j = 0; j < dvMatrix.ColumnCount; j++)
                 {
-
                     dvMatrix[j, i].Style.BackColor = Color.White;
                     if (dvMatrix[j, i].Value.ToString() == "1")
                     {
                         txtRelationships.Text += $"({members[i]},{members[j]}), ";
+                        counter++;
                     }
                 }
             }
+            relations = counter;
             IsTransitive();
             IsReflexive();
             IsAntisimetric();
@@ -200,6 +209,15 @@ namespace PropiedadesDeConjuntos
             }
 
             return IsReflexive;
+        }
+
+        private void txtMembers_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (Char)Keys.Enter)
+            {
+                DrawTable();
+                e.Handled = true;
+            }
         }
     }
 }
